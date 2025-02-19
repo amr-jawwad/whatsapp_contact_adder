@@ -218,6 +218,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
       ),
       body: Column(children: [
         TextFormField(
+          cursorColor: Colors.green,
           onChanged: (value) {
             filter(value);
           },
@@ -228,6 +229,15 @@ class _ContactsScreenState extends State<ContactsScreen> {
             ),
             hintText: "Search..",
             contentPadding: EdgeInsets.fromLTRB(20.0, 0, 0, 0),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.green),
+              // Change underline color
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Colors.green,
+                  width: 2.0), // Change focused underline color
+            ),
           ),
         ),
         Expanded(
