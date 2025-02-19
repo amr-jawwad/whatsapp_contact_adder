@@ -33,9 +33,7 @@ To install the app on your Android device:
     - Open the APK file and follow the on-screen instructions.
 
 ## Screenshots
-<img src="screenshots/Screenshot_1.png" alt="drawing" width="200"/>
-<img src="screenshots/Screenshot_2.png" alt="drawing" width="200"/>
-<img src="screenshots/Screenshot_3.png" alt="drawing" width="200"/>
+<img src="screenshots/Screenshot_1.png" alt="drawing" width="200"/>   <img src="screenshots/Screenshot_2.png" alt="drawing" width="200"/>   <img src="screenshots/Screenshot_3.png" alt="drawing" width="200"/>
 
 ## App Icon <img src="assets/icon/app_icon.png" alt="drawing" width="30"/>
 The app uses a custom icon stored in `assets/`. Ensure it's correctly referenced in `pubspec.yaml`.
