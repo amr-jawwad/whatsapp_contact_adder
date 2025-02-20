@@ -25,14 +25,30 @@ class ContactItem extends ISuspensionBean {
   String getSuspensionTag() => tag;
 }
 
-class _ContactsScreenState extends State<ContactsScreen> {
-  List<ContactItem> contacts = []; // Changed to List<ContactItem>
+class _ContactsScreenState extends State<ContactsScreen>
+    with WidgetsBindingObserver {
+  List<ContactItem> contacts = [];
   List<ContactItem> filteredContacts = [];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Observe lifecycle changes
     _fetchContacts();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance
+        .removeObserver(this); // Stop observing when screen is closed
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _fetchContacts(); // Refresh contacts when app is resumed
+    }
   }
 
   Future<void> _fetchContacts() async {
@@ -40,12 +56,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
       List<Contact> fetchedContacts =
           await FlutterContacts.getContacts(withProperties: true);
 
-      // Convert contacts to ContactItem format for AZListView
       List<ContactItem> contactItems = fetchedContacts.map((contact) {
         return ContactItem(contact.displayName, contact);
       }).toList();
 
-      // Sort contacts alphabetically & set index bar tags
       SuspensionUtil.sortListBySuspensionTag(contactItems);
       SuspensionUtil.setShowSuspensionStatus(contactItems);
 
@@ -73,19 +87,18 @@ class _ContactsScreenState extends State<ContactsScreen> {
     });
   }
 
-  Future<void> _addNewContact() async {
+  Future<void> _addNewContact(String phoneNumber) async {
     if (await FlutterContacts.requestPermission()) {
-      await FlutterContacts.openExternalInsert(); // ✅ Opens Android native form
+      await FlutterContacts.openExternalInsert(phoneNumber.isNotEmpty
+          ? Contact(phones: [Phone(phoneNumber)])
+          : null); // ✅ Opens Android native form
       _fetchContacts();
     }
-  } //This function's use was removed.
+  }
 
   Future<void> _editContact(Contact contact) async {
-    await FlutterContacts.openExternalEdit(
-        contact.id); // ✅ Opens native Android edit form
-
-    // ✅ Refresh contacts when user returns
-    _fetchContacts();
+    await FlutterContacts.openExternalEdit(contact.id);
+    _fetchContacts(); // Refresh contacts when returning
   }
 
   void _showPhoneNumberInputDialog() {
@@ -93,11 +106,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
     bool isValid = false;
 
     void validateInput(String input) {
-      final regex = RegExp(r'^\+[0-9]+$'); // Allows numbers and a leading '+'
+      final regex =
+          RegExp(r'^(?:\+|00)\d{4,18}$'); // Allows numbers and a leading '+'
       isValid = regex.hasMatch(input);
-      if (input.length < 6) {
-        isValid = false;
-      }
     }
 
     showDialog(
@@ -107,42 +118,86 @@ class _ContactsScreenState extends State<ContactsScreen> {
           // To update UI when text changes
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Enter Phone Number"),
+              // title: const Text("Enter Phone Number",),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextField(
                     controller: phoneController,
                     keyboardType: TextInputType.phone,
+                    cursorColor: Colors.green,
                     decoration: InputDecoration(
-                      labelText: "Phone Number",
-                      hintText: "Don't forget the country code (+)",
-                      border: const OutlineInputBorder(),
-                      errorText: isValid || phoneController.text.isEmpty
-                          ? null
-                          : "Invalid phone number,\nor missing country code (+)",
-                    ),
+                        labelText: "Enter Phone Number",
+                        labelStyle: TextStyle(
+                          color: Colors.green,
+                        ),
+                        hintText: "Example: +1234567890",
+                        border: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.green, width: 2.0)),
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green)),
+                        // Green border),
+                        errorText: isValid || phoneController.text.isEmpty
+                            ? null
+                            : "Invalid phone number,\nor missing country code (+)",
+                        suffixIcon: IconButton(
+                            onPressed: () => {
+                                  _addNewContact(isValid
+                                      ? phoneController.text.trim()
+                                      : "")
+                                },
+                            icon: Icon(
+                              Icons.person_add_alt_1,
+                              color: Colors.green,
+                            ))),
                     onChanged: (value) {
                       setState(() {
                         validateInput(value);
                       });
                     },
-                  ),
+                  )
                 ],
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context), // Close dialog
-                  child: const Text("Cancel"),
-                ),
-                ElevatedButton(
-                  onPressed: isValid
-                      ? () {
-                          Navigator.pop(context);
-                          _openContactURL(phoneController.text.trim());
-                        }
-                      : null, // Disable button if input is invalid
-                  child: const Text("Instant Text!"),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context), // Close dialog
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.green,
+                      ),
+
+                      child:
+                          const Text("Cancel", style: TextStyle(fontSize: 15)),
+                    ),
+                    Spacer(),
+                    Spacer(),
+                    TextButton(
+                      onPressed: isValid
+                          ? () {
+                              Navigator.pop(context);
+                              _openContactURL(phoneController.text.trim());
+                            }
+                          : null,
+                      // Disable button if input is invalid
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor:
+                              MediaQuery.of(context).platformBrightness ==
+                                      Brightness.dark
+                                  ? Colors.black
+                                  : Colors.white,
+                          disabledBackgroundColor: Colors.grey.withAlpha(0),
+                          disabledForegroundColor:
+                              Theme.of(context).disabledColor),
+                      child: const Text("Instant Text!",
+                          style: TextStyle(fontSize: 16)),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -156,7 +211,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     if (phoneNumber.isEmpty) {
       return;
     }
-    phoneNumber = phoneNumber.replaceAll(new RegExp(r'[^0-9]'), '');
+    phoneNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
     final Uri url =
         Uri.parse('https://api.whatsapp.com/send/?phone=$phoneNumber');
 
@@ -167,10 +222,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   void _handleContactTap(Contact contact) {
     if (contact.phones.length > 1) {
-      // Display dialog if multiple phone numbers exist
       _showPhoneNumberDialog(contact);
     } else if (contact.phones.isNotEmpty) {
-      // Proceed directly to _openContactURL for the single phone number
       _openContactURL(contact.phones[0].number);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +247,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 String label = phone.label.toString().split('.').last;
                 label = label[0].toUpperCase() + label.substring(1);
                 return ListTile(
-                  title: Text("$label: " + phone.number),
+                  title: Text("$label: ${phone.number}"),
                   onTap: () {
                     Navigator.pop(context);
                     _openContactURL(phone.number);
@@ -208,6 +261,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     );
   }
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -273,10 +327,14 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   ),
                 ListTile(
                   leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: Colors.green,
+                      foregroundColor:
+                          MediaQuery.of(context).platformBrightness ==
+                                  Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                       child: Text(contact.displayName[0])),
                   title: Text(contact.displayName),
-                  // subtitle: Text(contact.phones.isNotEmpty ? "Primary phone number:\n" + contact.phones[0].number : "No phone number"),
                   onTap: () => _handleContactTap(contact),
                   trailing: IconButton(
                     icon: Icon(
@@ -293,7 +351,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: _showPhoneNumberInputDialog, // Directly call _addNewContact
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add, size: 36),
       ),
     );
   }

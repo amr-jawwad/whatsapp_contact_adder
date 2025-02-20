@@ -20,7 +20,7 @@ You can also start chatting with a phone number directly without adding it as a 
 - ⚡ **No-contact WhatsApp Instant Chat** – Instantly open a WhatsApp chat with a given non-contact phone number!
 - 📇 **View Contacts** – Displays all phone contacts in a structured, scrollable alphabet list.
 - 🔍 **Search Functionality** – Quickly find contacts with a real-time search feature.
-- ✏️ **Edit Contacts** – Open the native Android edit contact form for modifications.
+- 📖️ **Add or Edit Contacts** – One-stop-shop for quick access to your contacts Add, Edit, Add to existing, or Remove!
 
 ## Installation
 To install the app on your Android device:
