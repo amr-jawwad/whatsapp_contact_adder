@@ -44,7 +44,7 @@ The app uses a custom icon stored in `assets/`. Ensure it's correctly referenced
 - **Android Studio** 2024.2.2 Patch 1
 
 ## License
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the GPL-3 License. See [LICENSE](LICENSE) for details.
 
 ## Contact
 For questions or suggestions, feel free to reach out!
