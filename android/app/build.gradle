@@ -37,6 +37,15 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+    flavorDimensions "default"
+
+    productFlavors {
+        fdroid {
+            dimension "default"
+            applicationIdSuffix ".fdroid"
+            versionNameSuffix "-fdroid"
+        }
+    }
 }
 
 flutter {
