@@ -42,8 +42,8 @@ android {
     productFlavors {
         fdroid {
             dimension "default"
-            applicationIdSuffix ".fdroid"
-            versionNameSuffix "-fdroid"
+            applicationId = "com.aj.wa.contact.adder"
+            versionName = "1.0.0"
         }
     }
 }
