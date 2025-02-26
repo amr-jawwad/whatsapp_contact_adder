@@ -29,11 +29,35 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
+      - name: Set up Keystore
+        run: |
+          echo "$KEYSTORE_FILE" | base64 --decode > keystore.jks
+          echo "$KEYSTORE_PASSWORD" > keystore-password.txt
+          echo "$KEY_ALIAS" > key-alias.txt
+          echo "$KEY_PASSWORD" > key-password.txt
+        env:
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
       - name: Build Unsigned APK
         run: flutter build apk --release --flavor fdroid
+        
+      - name: Rename APK for F-Droid
+        run: |
+          mv build/app/outputs/flutter-apk/app-fdroid-release.apk build/app/outputs/flutter-apk/app-fdroid-release-unsigned.apk
 
-      - name: Upload Unsigned APK as Artifact
+
+      - name: Sign APK
+        run: |
+          apksigner sign --ks keystore.jks --ks-pass pass:"$(cat keystore-password.txt)" \
+            --key-pass pass:"$(cat key-password.txt)" --key-alias "$(cat key-alias.txt)" \
+            --out build/app/outputs/flutter-apk/app-fdroid-release.apk \
+            build/app/outputs/flutter-apk/app-fdroid-release-unsigned.apk
+
+      - name: Upload Signed APK as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: unsigned-apk
+          name: fdroid-release-apk-signed
           path: build/app/outputs/flutter-apk/app-fdroid-release.apk
