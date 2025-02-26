@@ -31,16 +31,21 @@ jobs:
           
       - name: Install Android SDK & apksigner
         run: |
-          sudo apt update
-          sudo apt install -y wget unzip
-          # Create the necessary directories if they don't exist
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-          unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
-          # Move the extracted cmdline-tools to the correct folder
-          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;30.0.3"
+            sudo apt update
+            sudo apt install -y wget unzip
+            # Create the necessary directories if they don't exist
+            mkdir -p $HOME/android-sdk/cmdline-tools
+            wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+            unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk/cmdline-tools
+            # Move the extracted cmdline-tools to the correct folder
+            mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+            yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+            # Install platform-tools and build-tools with apksigner
+            $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;30.0.3"
+            # Ensure apksigner is available
+            export PATH=$PATH:$HOME/android-sdk/build-tools/30.0.3
+            # Verify apksigner installation
+            apksigner --version
 
 
 
@@ -66,6 +71,7 @@ jobs:
 
       - name: Sign APK
         run: |
+          export PATH=$PATH:$HOME/android-sdk/cmdline-tools/latest/bin
           apksigner sign --ks keystore.jks --ks-pass pass:"$(cat keystore-password.txt)" \
             --key-pass pass:"$(cat key-password.txt)" --key-alias "$(cat key-alias.txt)" \
             --out build/app/outputs/flutter-apk/app-fdroid-release.apk \
