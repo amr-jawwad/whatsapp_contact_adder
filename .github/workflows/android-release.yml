@@ -35,8 +35,8 @@ jobs:
           sudo apt install -y wget unzip
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
           unzip commandlinetools-linux-8512546_latest.zip -d $HOME/android-sdk
-          yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
-          $HOME/android-sdk/tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3"
+          yes | $HOME/android-sdk/cmdline-tools/bin/sdkmanager --licenses
+          $HOME/android-sdk/cmdline-tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3"
 
       - name: Set up Keystore
         run: |
