@@ -9,14 +9,6 @@ android {
     namespace = "amr.jawwad.whatsapp_contacts_adder_android"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-    def keyPropsFile = rootProject.file("key.properties")
-    def keyProps = new Properties()
-
-    if (keyPropsFile.exists()) {
-        keyProps.load(new FileInputStream(keyPropsFile))
-    } else {
-        println "⚠️ Warning: key.properties file not found! Using debug signing."
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -38,22 +30,6 @@ android {
         versionName = flutter.versionName
     }
 
-    signingConfigs {
-        release {
-            if (keyPropsFile.exists()) {
-                storeFile file(keyProps['storeFile'])
-                storePassword keyProps['storePassword']
-                keyAlias keyProps['keyAlias']
-                keyPassword keyProps['keyPassword']
-            }
-        }
-    }
-
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
     flavorDimensions "default"
 
     productFlavors {
