@@ -23,9 +23,15 @@ You can also start chatting with a phone number directly without adding it as a 
 - 📖️ **Add or Edit Contacts** – One-stop-shop for quick access to your contacts Add, Edit, Add to existing, or Remove!
 
 ## Installation
-To install the app on your Android device:
+Simply, get it on F-Droid store!
 
-1. **Download the APK [here](build/app/outputs/apk/release/wa-adder.apk)** 
+[<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid!"
+    height="80">](https://f-droid.org/packages/com.aj.wa.contact.adder)
+
+Or, to manually install the app on your Android device:
+
+1. **Download the APK [here](build/app/outputs/flutter-apk/app-fdroid-release.apk)** 
 2. **Enable Unknown Sources**
     - Go to `Settings` > `Apps & notifications` > `Special app access` > `Install unknown apps`.
     - Select the file manager or browser used to download the APK and enable "Allow from this source."
