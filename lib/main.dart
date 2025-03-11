@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:azlistview/azlistview.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(const MyApp());
@@ -226,11 +227,9 @@ class _ContactsScreenState extends State<ContactsScreen>
     } else if (contact.phones.isNotEmpty) {
       _openContactURL(contact.phones[0].number);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Contact has no valid phone numbers'),
-          duration: Duration(seconds: 3),
-        ),
+      Fluttertoast.showToast(
+        msg: "Contact has no valid phone numbers",
+        toastLength: Toast.LENGTH_SHORT,
       );
     }
   }
