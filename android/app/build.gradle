@@ -36,7 +36,6 @@ android {
         fdroid {
             dimension "default"
             applicationId = "com.aj.wa.contact.adder"
-            versionName = "1.0.0"
         }
     }
 }
